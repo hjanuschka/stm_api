@@ -10,25 +10,26 @@ module StmApi
     attr_accessor :userhash
     attr_accessor :currency
     attr_accessor :team_id
-    
-    def initialize(params = {}) 
+
+    def initialize(params = {})
       @userhash = params[:userhash]
       @currency = params[:currency]
       @team_id = params[:team_id]
     end
+
     def donate(params = {})
       bearer = 'LAXQszxcmpGMWi24y0NFt00YPWGJnJOo9Ba8ijLcI1fmiKHI1PDF7KG7PGJU7KcX'
       token_payload = {
         'userHash' => @userhash,
         'currency' => @currency
       }
-      
+
       client_token = RestClient.post('https://api.sharethemeal.org/api/payment/braintree/client-tokens', token_payload.to_json,
                                      content_type: :json, accept: :json,
                                      Authorization: "Bearer #{bearer}")
 
       client_token_response = JSON.parse(client_token)
-      
+
       auth_reply = JSON.parse(Base64.decode64(client_token_response['clientToken']))
       finger_print =  URI.encode_www_form_component(auth_reply['authorizationFingerprint'])
 
@@ -53,8 +54,8 @@ module StmApi
         return false
       end
 
-        rescue => err
-          return false
-        end
+    rescue
+      return false
+    end
   end
 end
