@@ -54,8 +54,8 @@ module StmApi
         return false
       end
 
-    rescue
-      return false
+    #rescue
+    #  return false
     end
   end
 end
