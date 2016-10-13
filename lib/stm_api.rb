@@ -63,7 +63,7 @@ module StmApi
       }
 
       transaction_response = RestClient.post('https://api.sharethemeal.org/api/payment/braintree/transactions', transaction_payload.to_json, content_type: :json, accept: :json,
-                                                                                                                                             'Authorization' => "Bearer #{bearer}")
+                                                                                                                                             'Authorization' => "Bearer #{BEARER}")
 
       transaction_response_json = JSON.parse(transaction_response)
       if transaction_response_json['result']['donationCreated'] == true
