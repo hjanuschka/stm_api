@@ -10,15 +10,33 @@ module StmApi
     attr_accessor :userhash
     attr_accessor :currency
     attr_accessor :team_id
-
+    BEARER = 'LAXQszxcmpGMWi24y0NFt00YPWGJnJOo9Ba8ijLcI1fmiKHI1PDF7KG7PGJU7KcX'
+    
     def initialize(params = {})
       @userhash = params[:userhash]
       @currency = params[:currency]
       @team_id = params[:team_id]
     end
 
+    def user_teams()
+      team_statistic = RestClient.get("https://api.sharethemeal.org/api/users/#{@userhash}/teams",
+                                     content_type: :json, accept: :json,
+                                     Authorization: "Bearer #{BEARER}")
+      team_statistic_json = JSON.parse(team_statistic)
+      
+      team_statistic_json["userTeams"]
+    end
+    def find_one_team(id)
+      teams = user_teams
+      teams.each do | t |
+        if t["teamId"] == id
+          return t
+        end
+      end
+      return false
+    end
     def donate(params = {})
-      bearer = 'LAXQszxcmpGMWi24y0NFt00YPWGJnJOo9Ba8ijLcI1fmiKHI1PDF7KG7PGJU7KcX'
+      
       token_payload = {
         'userHash' => @userhash,
         'currency' => @currency
@@ -26,7 +44,7 @@ module StmApi
 
       client_token = RestClient.post('https://api.sharethemeal.org/api/payment/braintree/client-tokens', token_payload.to_json,
                                      content_type: :json, accept: :json,
-                                     Authorization: "Bearer #{bearer}")
+                                     Authorization: "Bearer #{BEARER}")
 
       client_token_response = JSON.parse(client_token)
 
