@@ -17,7 +17,13 @@ module StmApi
       @currency = params[:currency]
       @team_id = params[:team_id]
     end
-
+    def user_info()
+      user_info_response = RestClient.get("https://api.sharethemeal.org/api/users/#{@userhash}",
+                                     content_type: :json, accept: :json,
+                                     Authorization: "Bearer #{BEARER}")
+      user_info_json = JSON.parse(user_info_response)
+      
+    end
     def user_teams()
       team_statistic = RestClient.get("https://api.sharethemeal.org/api/users/#{@userhash}/teams",
                                      content_type: :json, accept: :json,
