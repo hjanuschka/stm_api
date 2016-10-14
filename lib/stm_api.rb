@@ -11,38 +11,49 @@ module StmApi
     attr_accessor :currency
     attr_accessor :team_id
     BEARER = 'LAXQszxcmpGMWi24y0NFt00YPWGJnJOo9Ba8ijLcI1fmiKHI1PDF7KG7PGJU7KcX'
-    
+
     def initialize(params = {})
       @userhash = params[:userhash]
       @currency = params[:currency]
       @team_id = params[:team_id]
     end
-    def user_info()
+
+    def user_info
       user_info_response = RestClient.get("https://api.sharethemeal.org/api/users/#{@userhash}",
-                                     content_type: :json, accept: :json,
-                                     Authorization: "Bearer #{BEARER}")
+                                          content_type: :json, accept: :json,
+                                          Authorization: "Bearer #{BEARER}")
       user_info_json = JSON.parse(user_info_response)
-      
+      return user_info_json
     end
-    def user_teams()
+
+    def statistics
+      user_info_response = RestClient.get("https://api.sharethemeal.org/api/campaigns/zomba/status",
+                                          content_type: :json, accept: :json,
+                                          Authorization: "Bearer #{BEARER}")
+      user_info_json = JSON.parse(user_info_response)
+      return user_info_json
+    end
+
+    def user_teams
       team_statistic = RestClient.get("https://api.sharethemeal.org/api/users/#{@userhash}/teams",
-                                     content_type: :json, accept: :json,
-                                     Authorization: "Bearer #{BEARER}")
+                                      content_type: :json, accept: :json,
+                                      Authorization: "Bearer #{BEARER}")
       team_statistic_json = JSON.parse(team_statistic)
-      
+
       team_statistic_json["userTeams"]
     end
+
     def find_one_team(id)
       teams = user_teams
-      teams.each do | t |
+      teams.each do |t|
         if t["teamId"] == id
           return t
         end
       end
       return false
     end
+
     def donate(params = {})
-      
       token_payload = {
         'userHash' => @userhash,
         'currency' => @currency
@@ -78,8 +89,8 @@ module StmApi
         return false
       end
 
-    #rescue
-    #  return false
+      # rescue
+      #  return false
     end
   end
 end
