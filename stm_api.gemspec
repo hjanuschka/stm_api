@@ -8,6 +8,7 @@ Gem::Specification.new do |spec|
   spec.version       = StmApi::VERSION
   spec.authors       = ['Helmut Januschka']
   spec.email         = ['helmut@januschka.com']
+  spec.licenses      = ['MIT']
 
   spec.summary       = 'Donate to share the meal'
   spec.description   = 'Donate to share the meal'
