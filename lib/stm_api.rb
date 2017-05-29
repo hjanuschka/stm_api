@@ -10,12 +10,14 @@ module StmApi
     attr_accessor :userhash
     attr_accessor :currency
     attr_accessor :team_id
+    attr_accessor :campaign_id
     BEARER = 'LAXQszxcmpGMWi24y0NFt00YPWGJnJOo9Ba8ijLcI1fmiKHI1PDF7KG7PGJU7KcX'
 
     def initialize(params = {})
       @userhash = params[:userhash]
       @currency = params[:currency]
       @team_id = params[:team_id]
+      @campaign_id = campaigns.first unless params[:campaign_id]
     end
 
     def user_info
@@ -41,6 +43,18 @@ module StmApi
       team_statistic_json = JSON.parse(team_statistic)
 
       team_statistic_json["userTeams"]
+    end
+
+    def campaigns
+      campaigns_raw = RestClient.get("https://api.sharethemeal.org/api/meta",
+                                     content_type: :json, accept: :json,
+                                     Authorization: "Bearer #{BEARER}")
+      campaigns_json = JSON.parse(campaigns_raw)
+      found_campaigns = []
+      campaigns_json["campaigns"].each do |camp, v|
+        found_campaigns << camp
+      end
+      found_campaigns
     end
 
     def find_one_team(id)
@@ -76,7 +90,8 @@ module StmApi
         'amount' => params[:amount],
         'currency' => @currency,
         'paymentMethodNonce' => payment_infos_json['paymentMethods'].first['nonce'],
-        'teamId' => @team_id
+        'teamId' => @team_id,
+        'campaignId' => @campaign_id
       }
 
       transaction_response = RestClient.post('https://api.sharethemeal.org/api/payment/braintree/transactions', transaction_payload.to_json, content_type: :json, accept: :json,
